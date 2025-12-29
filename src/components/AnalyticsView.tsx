@@ -1,9 +1,12 @@
 import { Activity } from "@/types/activity";
-import { TrendingUp, TrendingDown, Sparkles, Zap, Battery, Heart, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, TrendingDown, Sparkles, Zap, Battery, Heart, ChevronDown, ChevronUp, Download } from "lucide-react";
 import { useState } from "react";
 import { useStreak } from "@/hooks/useStreak";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import StreakSection from "@/components/StreakSection";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface AnalyticsViewProps {
   activities: Activity[];
@@ -64,6 +67,82 @@ const getTagInsights = (activities: Activity[], hideTopics: boolean): TagInsight
 
 const MAX_TAGS_PER_CATEGORY = 5;
 const MAX_ACTIVITIES_SHOWN = 5;
+
+const exportToCSV = (activities: Activity[]) => {
+  if (activities.length === 0) {
+    toast.error("No activities to export");
+    return;
+  }
+
+  const likertEnergyLabels = ['', 'Very Drained', 'Drained', 'Neutral', 'Energized', 'Very Energized'];
+  const likertEngagementLabels = ['', 'Very Disengaged', 'Disengaged', 'Neutral', 'Engaged', 'Very Engaged'];
+
+  const escapeCSV = (value: string | undefined | null): string => {
+    if (value === undefined || value === null) return '';
+    const str = String(value);
+    if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes(';')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+
+  const headers = [
+    'Date',
+    'Time',
+    'Activity',
+    'Engagement (1-5)',
+    'Engagement Level',
+    'Energy (1-5)',
+    'Energy Level',
+    'In Flow',
+    'Topics',
+    'Feelings',
+    'AEIOU Activities',
+    'AEIOU Environments',
+    'AEIOU Interactions',
+    'AEIOU Objects',
+    'AEIOU People',
+    'Notes'
+  ];
+
+  const rows = activities.map(activity => {
+    const date = new Date(activity.createdAt);
+    return [
+      format(date, 'yyyy-MM-dd'),
+      format(date, 'HH:mm'),
+      escapeCSV(activity.name),
+      activity.engagement,
+      escapeCSV(likertEngagementLabels[activity.engagement]),
+      activity.energy,
+      escapeCSV(likertEnergyLabels[activity.energy]),
+      activity.inFlow ? 'Yes' : 'No',
+      escapeCSV(activity.topics?.join(', ')),
+      escapeCSV(activity.feelings?.join(', ')),
+      escapeCSV(activity.aeiou?.activities?.join(', ')),
+      escapeCSV(activity.aeiou?.environments?.join(', ')),
+      escapeCSV(activity.aeiou?.interactions?.join(', ')),
+      escapeCSV(activity.aeiou?.objects?.join(', ')),
+      escapeCSV(activity.aeiou?.users?.join(', ')),
+      escapeCSV(activity.notes)
+    ].join(';');
+  });
+
+  const csvContent = [headers.join(';'), ...rows].join('\n');
+  
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' });
+  
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `fuelfinder-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  
+  toast.success(`Exported ${activities.length} activities`);
+};
 
 const TagInsightsList = ({ insights, colorClass }: { insights: TagInsight[]; colorClass: string }) => {
   const [expanded, setExpanded] = useState(false);
@@ -177,6 +256,17 @@ const AnalyticsView = ({ activities }: AnalyticsViewProps) => {
           hasActivityToday={hasActivityToday} 
           activities={activities} 
         />
+
+        {/* Export Button - always show, will show toast if no data */}
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => exportToCSV(activities)}
+          data-testid="button-export-csv"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Export All Records (0)
+        </Button>
         
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
@@ -233,6 +323,17 @@ const AnalyticsView = ({ activities }: AnalyticsViewProps) => {
         hasActivityToday={hasActivityToday} 
         activities={activities} 
       />
+
+      {/* Export Button */}
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={() => exportToCSV(activities)}
+        data-testid="button-export-csv"
+      >
+        <Download className="w-4 h-4 mr-2" />
+        Export All Records ({activities.length})
+      </Button>
 
       <h2 className="text-xl font-semibold text-foreground">Your Patterns</h2>
 

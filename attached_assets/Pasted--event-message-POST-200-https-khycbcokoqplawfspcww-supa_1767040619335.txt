@@ -1,0 +1,97 @@
+{
+  "event_message": "POST | 200 | https://khycbcokoqplawfspcww.supabase.co/functions/v1/get-vapid-key",
+  "id": "9511885d-5104-4439-a714-54f0bdb6c470",
+  "metadata": [
+    {
+      "deployment_id": "khycbcokoqplawfspcww_4f368faf-0ede-489a-abba-58ccaa0d1b45_6",
+      "execution_id": "b52fb380-1c41-4be7-a51c-fc3e42951179",
+      "execution_time_ms": 334,
+      "function_id": "4f368faf-0ede-489a-abba-58ccaa0d1b45",
+      "project_ref": "khycbcokoqplawfspcww",
+      "request": [
+        {
+          "headers": [
+            {
+              "accept": "*/*",
+              "accept_encoding": "gzip, br",
+              "connection": "Keep-Alive",
+              "content_length": "0",
+              "cookie": null,
+              "host": "khycbcokoqplawfspcww.supabase.co",
+              "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1",
+              "x_client_info": "supabase-js-web/2.89.0"
+            }
+          ],
+          "host": "khycbcokoqplawfspcww.supabase.co",
+          "method": "POST",
+          "pathname": "/functions/v1/get-vapid-key",
+          "port": null,
+          "protocol": "https:",
+          "sb": [
+            {
+              "apikey": [
+                {
+                  "apikey": [
+                    {
+                      "error": null,
+                      "hash": "OVRLOzVvRC07x8-KrtK3xQnxH1_DjIYGQm2tO1TfKlY",
+                      "prefix": "sb_publishable_QU0Bu"
+                    }
+                  ],
+                  "authorization": []
+                }
+              ],
+              "auth_user": "8c71f41f-2e60-4bd4-bafb-3006d6944e34",
+              "jwt": [
+                {
+                  "apikey": [],
+                  "authorization": [
+                    {
+                      "invalid": null,
+                      "payload": [
+                        {
+                          "algorithm": "ES256",
+                          "expires_at": 1767043747,
+                          "issuer": "https://khycbcokoqplawfspcww.supabase.co/auth/v1",
+                          "key_id": "d2808eb2-5f63-4e73-b0e9-e7ca372aad6c",
+                          "role": "authenticated",
+                          "session_id": "e87c6a12-5019-48bc-9e2e-75c513c2adec",
+                          "signature_prefix": "wTCpmE",
+                          "subject": "8c71f41f-2e60-4bd4-bafb-3006d6944e34"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "search": null,
+          "url": "https://khycbcokoqplawfspcww.supabase.co/functions/v1/get-vapid-key"
+        }
+      ],
+      "response": [
+        {
+          "headers": [
+            {
+              "content_length": "123",
+              "content_type": "application/json",
+              "date": "Mon, 29 Dec 2025 20:34:14 GMT",
+              "sb_request_id": "019b6bd1-8ec7-7ec3-9323-b62c7b6505df",
+              "server": "cloudflare",
+              "vary": "Accept-Encoding",
+              "x_envoy_upstream_service_time": null,
+              "x_sb_compute_multiplier": null,
+              "x_sb_edge_region": "eu-central-1",
+              "x_sb_resource_multiplier": null,
+              "x_served_by": "supabase-edge-runtime"
+            }
+          ],
+          "status_code": 200
+        }
+      ],
+      "version": "6"
+    }
+  ],
+  "timestamp": 1767040454677000
+}
