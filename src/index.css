@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap");
+
+@layer base {
+  :root {
+    /* Warm sage & coral palette */
+    --background: 40 30% 97%;
+    --foreground: 220 20% 20%;
+
+    --card: 40 25% 99%;
+    --card-foreground: 220 20% 20%;
+
+    --popover: 40 25% 99%;
+    --popover-foreground: 220 20% 20%;
+
+    /* Sage green primary */
+    --primary: 150 25% 45%;
+    --primary-foreground: 40 30% 97%;
+
+    /* Soft cream secondary */
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 220 20% 25%;
+
+    /* Muted sage */
+    --muted: 150 15% 92%;
+    --muted-foreground: 220 10% 50%;
+
+    /* Soft coral accent */
+    --accent: 216 12.1951% 83.9216%;
+    --accent-foreground: 40 30% 97%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 40 30% 97%;
+
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 150 25% 45%;
+
+    --radius: 1rem;
+
+    /* Custom tokens */
+    --energy-high: 15 80% 60%;
+    --energy-medium: 45 80% 55%;
+    --energy-low: 220 20% 60%;
+
+    --engagement-high: 150 50% 50%;
+    --engagement-medium: 150 30% 60%;
+    --engagement-low: 150 15% 70%;
+
+    --flow-glow: 280 60% 65%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(150 25% 45%), hsl(150 35% 55%));
+    --gradient-energy: linear-gradient(90deg, hsl(220 20% 60%), hsl(45 80% 55%), hsl(15 80% 60%));
+    --gradient-card: linear-gradient(180deg, hsl(40 25% 99%), hsl(40 20% 96%));
+
+    --shadow-soft: 0 4px 20px -4px hsl(150 20% 30% / 0.1);
+    --shadow-card: 0 8px 30px -8px hsl(150 20% 30% / 0.12);
+    --shadow-glow: 0 0 30px hsl(280 60% 65% / 0.3);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 82%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 82%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 82%;
+
+    --primary: 150 30% 50%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 75%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 50%;
+
+    --accent: 15 50% 55%;
+    --accent-foreground: 0 0% 5%;
+
+    --destructive: 0 50% 45%;
+    --destructive-foreground: 0 0% 82%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 150 30% 50%;
+
+    --energy-high: 15 60% 50%;
+    --energy-medium: 45 60% 48%;
+    --energy-low: 220 15% 50%;
+
+    --engagement-high: 150 40% 45%;
+    --engagement-medium: 150 25% 50%;
+    --engagement-low: 150 15% 55%;
+
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.5);
+    --shadow-card: 0 8px 30px -8px hsl(0 0% 0% / 0.6);
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 82%;
+    --sidebar-primary: 150 30% 50%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 82%;
+    --sidebar-border: 0 0% 10%;
+    --sidebar-ring: 150 30% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    height: 100%;
+    background-color: hsl(var(--background));
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100%;
+    min-height: 100dvh;
+    margin: 0;
+  }
+
+  /* App root container - handles safe-area for iOS PWA */
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: hsl(var(--background));
+    /* Extend background into safe-area regions */
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Fixed overlay to paint safe-area top region on iOS */
+  #root::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background-color: hsl(var(--background));
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  /* Fix native time inputs to respect container width on iOS/Safari */
+  input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .energy-gradient {
+    background: var(--gradient-energy);
+  }
+
+  .flow-active {
+    box-shadow: var(--shadow-glow);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(280 60% 65% / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 35px hsl(280 60% 65% / 0.5);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out forwards;
+}
