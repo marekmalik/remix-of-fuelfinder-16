@@ -16,6 +16,7 @@ export interface Activity {
   inFlow: boolean;
   aeiou?: AEIOUDetails;
   topics?: string[];
+  feelings?: string[];
   createdAt: Date;
   notes?: string;
 }

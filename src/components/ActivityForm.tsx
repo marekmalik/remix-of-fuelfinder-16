@@ -9,6 +9,7 @@ import { Activity, AEIOUDetails, LikertLevel } from "@/types/activity";
 import LikertScale from "./LikertScale";
 import FlowToggle from "./FlowToggle";
 import AEIOUSection from "./AEIOUSection";
+import FeelingsSection from "./FeelingsSection";
 import TagInput from "./TagInput";
 import { useUserTags } from "@/hooks/useUserTags";
 import { useTagFrequencies } from "@/hooks/useTagFrequencies";
@@ -28,6 +29,7 @@ const ActivityForm = ({ onSubmit, onCancel }: ActivityFormProps) => {
   const [notes, setNotes] = useState('');
   const [aeiou, setAeiou] = useState<AEIOUDetails>({});
   const [topics, setTopics] = useState<string[]>([]);
+  const [feelings, setFeelings] = useState<string[]>([]);
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [timeValue, setTimeValue] = useState(format(new Date(), "HH:mm"));
   
@@ -75,6 +77,7 @@ const ActivityForm = ({ onSubmit, onCancel }: ActivityFormProps) => {
       notes: notes.trim() || undefined,
       aeiou: Object.values(aeiou).some(v => v && v.length > 0) ? aeiou : undefined,
       topics: topics.length > 0 ? topics : undefined,
+      feelings: feelings.length > 0 ? feelings : undefined,
       createdAt: activityDate,
     });
   };
@@ -192,6 +195,8 @@ const ActivityForm = ({ onSubmit, onCancel }: ActivityFormProps) => {
         <FlowToggle active={inFlow} onChange={setInFlow} />
 
         <AEIOUSection values={aeiou} onChange={setAeiou} />
+
+        <FeelingsSection selectedFeelings={feelings} onChange={setFeelings} />
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">

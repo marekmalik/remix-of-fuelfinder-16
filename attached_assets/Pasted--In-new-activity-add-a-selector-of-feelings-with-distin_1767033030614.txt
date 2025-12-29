@@ -1,0 +1,45 @@
+- [ ] In new activity add a selector of feelings with distinction of positive and negative ones. Each category contains tiles that I can select (multiple). Each tile has name of the feeling and below sentence with the explanation. The feelings section is collapsible and also positive and negative sections are collapsible individually. This option will be optional and below the AEIOU Method. The lis of feelings is here:
+
+Pleasant feelings
+	1.	Joyful — I feel bright and happy inside, like I could smile or laugh easily.
+	2.	Content — I feel satisfied with how things are right now.
+	3.	Peaceful — I feel calm and settled in myself.
+	4.	Relieved — I feel tension leaving my body because something hard just got easier.
+	5.	Grateful — I feel thankful for what I got or what someone did for me.
+	6.	Hopeful — I feel like things can go well, and I can imagine a good next step.
+	7.	Confident — I feel sure I can handle this, even if it takes effort.
+	8.	Safe — I feel protected and not in danger, so I can relax.
+	9.	Connected — I feel close to someone, like we are together in this.
+	10.	Loved — I feel cared for and important to someone.
+	11.	Inspired — I feel energized by an idea or meaning, and I want to do something.
+	12.	Curious — I feel interested, and I want to learn more or understand.
+	13.	Proud — I feel good about what I did and how I showed up.
+	14.	Eager — I feel excited to start, and I want to move forward.
+	15.	Playful — I feel light and fun, like I want to joke or play.
+	16.	Moved/Touched — I feel my heart soften because something kind or beautiful happened.
+	17.	Accepted — I feel okay as I am, and I don’t need to pretend.
+	18.	Empowered — I feel I have choices and I can make things happen.
+	19.	Tender — I feel gentle and warm, and I want to be kind.
+	20.	Grounded — I feel steady and present, like I’m here and I can breathe.
+
+Unpleasant feelings
+	1.	Sad — I feel heavy inside, like something matters to me and it hurts.
+	2.	Grief-stricken — I feel deep pain and sorrow, like I lost something important.
+	3.	Lonely — I feel alone and not connected, like I’m on my own.
+	4.	Anxious — I feel worried and restless, like my mind can’t stop thinking about what might happen.
+	5.	Afraid — I feel scared, like something could harm me or go badly.
+	6.	Overwhelmed — I feel like it’s too much, and I can’t take it all in right now.
+	7.	Stressed — I feel pressured and tight, like there’s too much on me.
+	8.	Frustrated — I feel stuck, like I keep trying and it’s not working.
+	9.	Angry — I feel hot or charged inside because something feels wrong or unfair.
+	10.	Irritated — I feel annoyed, and small things bother me more than usual.
+	11.	Resentful — I feel bitter because I think I’m carrying more than my share.
+	12.	Hurt — I feel a sting inside, like something someone did or said affected me.
+	13.	Rejected — I feel not wanted or not chosen, and it hurts.
+	14.	Ashamed — I feel like something is wrong with me, and I want to hide.
+	15.	Guilty — I feel bad about what I did because I think it hurt someone or broke my values.
+	16.	Embarrassed — I feel exposed and awkward, like people saw something I didn’t want them to see.
+	17.	Jealous — I feel scared of losing someone’s love or attention to someone else.
+	18.	Envious — I feel bad because I want what someone else has.
+	19.	Disappointed — I feel let down because I hoped for something different.
+	20.	Numb — I feel shut down, like I can’t feel much right now.
