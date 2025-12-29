@@ -1,10 +1,9 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-authorization',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 serve(async (req) => {
@@ -14,41 +13,8 @@ serve(async (req) => {
   }
 
   try {
-    // Supabase gateway validates JWT and provides it via x-supabase-authorization
-    // The original Authorization header may be stripped after validation
-    const authHeader = 
-      req.headers.get('x-supabase-authorization') ||
-      req.headers.get('authorization') || 
-      req.headers.get('Authorization');
-    
-    console.log('Available headers:', [...req.headers.keys()]);
-    console.log('Auth header found:', authHeader ? 'yes' : 'no');
-    
-    if (!authHeader) {
-      console.log('No auth header found');
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - no auth header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      console.log('Auth validation failed:', authError?.message);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
+    // VAPID public key is not sensitive - it's meant to be public
+    // It's used by browsers to verify push messages come from your server
     const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
 
     if (!vapidPublicKey) {
@@ -59,7 +25,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`VAPID key requested by user: ${user.id}`);
+    console.log('VAPID public key requested successfully');
     return new Response(
       JSON.stringify({ publicKey: vapidPublicKey }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
