@@ -78,13 +78,26 @@ export function usePushNotifications() {
     
     const fetchVapidKey = async () => {
       try {
+        console.log('[Push] Fetching VAPID key...');
         const { data, error } = await supabase.functions.invoke('get-vapid-key');
-        if (error) throw error;
-        if (data?.publicKey) {
-          setVapidPublicKey(data.publicKey);
+        console.log('[Push] VAPID response:', { data, error });
+        
+        if (error) {
+          console.error('[Push] VAPID fetch error details:', {
+            message: error.message,
+            name: error.name,
+            context: (error as any).context
+          });
+          throw error;
         }
-      } catch (error) {
-        console.error('Error fetching VAPID key:', error);
+        if (data?.publicKey) {
+          console.log('[Push] VAPID key received successfully');
+          setVapidPublicKey(data.publicKey);
+        } else if (data?.error) {
+          console.error('[Push] VAPID function returned error:', data.error);
+        }
+      } catch (error: any) {
+        console.error('[Push] Error fetching VAPID key:', error);
       }
     };
 
