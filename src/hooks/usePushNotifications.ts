@@ -91,7 +91,7 @@ export function usePushNotifications() {
         
         const { data, error } = await supabase.functions.invoke('get-vapid-key', {
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            authorization: `Bearer ${accessToken}`
           }
         });
         console.log('[Push] VAPID response:', { data, error });
