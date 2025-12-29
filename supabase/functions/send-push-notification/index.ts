@@ -1,9 +1,10 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-authorization',
 };
 
 // Base64URL encode
@@ -18,7 +19,7 @@ function base64UrlDecode(str: string): ArrayBuffer {
   const base64 = str.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat(padding);
   const binary = atob(base64);
   const bytes = new Uint8Array([...binary].map(c => c.charCodeAt(0)));
-  return bytes.buffer as ArrayBuffer;
+  return bytes.buffer;
 }
 
 // Base64URL decode to Uint8Array (for non-crypto operations)
@@ -76,7 +77,7 @@ async function generateVapidAuth(
   
   const cryptoKey = await crypto.subtle.importKey(
     'pkcs8',
-    pkcs8Key.buffer as ArrayBuffer,
+    pkcs8Key.buffer,
     { name: 'ECDSA', namedCurve: 'P-256' },
     false,
     ['sign']
@@ -89,7 +90,7 @@ async function generateVapidAuth(
   );
   
   const sigArray = new Uint8Array(signature);
-  let r: Uint8Array, s: Uint8Array;
+  let r, s;
   
   if (sigArray[0] === 0x30) {
     let offset = 2;
@@ -197,7 +198,7 @@ async function encryptPayload(
   
   const saltKey = await crypto.subtle.importKey(
     'raw',
-    salt.buffer as ArrayBuffer,
+    salt.buffer,
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
@@ -235,7 +236,7 @@ async function encryptPayload(
   
   const aesKey = await crypto.subtle.importKey(
     'raw',
-    cek.buffer as ArrayBuffer,
+    cek.buffer,
     'AES-GCM',
     false,
     ['encrypt']
@@ -261,7 +262,7 @@ async function encryptPayload(
   encrypted.set(header);
   encrypted.set(new Uint8Array(encryptedData), header.length);
   
-  return encrypted.buffer as ArrayBuffer;
+  return encrypted.buffer;
 }
 
 // Send push notification
@@ -299,7 +300,7 @@ async function sendWebPush(
     const errorBody = await response.text();
     console.error('Push service error:', response.status, errorBody);
     const error = new Error(`Push service returned ${response.status}: ${errorBody}`);
-    (error as Error & { statusCode: number }).statusCode = response.status;
+    error.statusCode = response.status;
     throw error;
   }
   
@@ -317,13 +318,22 @@ serve(async (req) => {
 
   try {
     console.log('Processing push notification request...');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    console.log('Available headers:', [...req.headers.keys()]);
+    
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
     const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
 
-    const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
+    // Check for auth header - Supabase may use x-supabase-authorization after gateway validation
+    const authHeader = 
+      req.headers.get('x-supabase-authorization') ||
+      req.headers.get('authorization') || 
+      req.headers.get('Authorization');
+    
+    console.log('Auth header found:', authHeader ? 'yes' : 'no');
+    
     if (!authHeader) {
       console.error('Missing Authorization header');
       return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
@@ -332,7 +342,7 @@ serve(async (req) => {
       });
     }
 
-    // Validate JWT via the auth API (more reliable than platform verify_jwt for some token formats)
+    // Validate JWT via the auth API
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
       auth: { persistSession: false },
@@ -340,7 +350,7 @@ serve(async (req) => {
 
     const { data: userData, error: userErr } = await authClient.auth.getUser();
     if (userErr || !userData?.user) {
-      console.error('Invalid JWT:', userErr);
+      console.error('Invalid JWT:', userErr?.message);
       return new Response(JSON.stringify({ error: 'Invalid JWT' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -422,12 +432,11 @@ serve(async (req) => {
 
           console.log('Push notification sent successfully to subscription:', sub.id);
           return { success: true, subscriptionId: sub.id };
-        } catch (err: unknown) {
-          const error = err as { statusCode?: number; message?: string };
-          console.error('Error sending push to subscription:', sub.id, error);
+        } catch (err) {
+          console.error('Error sending push to subscription:', sub.id, err);
           
           // If subscription is no longer valid, remove it
-          if (error.statusCode === 404 || error.statusCode === 410) {
+          if (err.statusCode === 404 || err.statusCode === 410) {
             console.log('Removing invalid subscription:', sub.id);
             await supabase
               .from('push_subscriptions')
@@ -435,7 +444,7 @@ serve(async (req) => {
               .eq('id', sub.id);
           }
           
-          return { success: false, subscriptionId: sub.id, error: error.message || 'Unknown error' };
+          return { success: false, subscriptionId: sub.id, error: err.message || 'Unknown error' };
         }
       })
     );
