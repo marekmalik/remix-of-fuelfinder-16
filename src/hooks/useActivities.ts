@@ -33,6 +33,7 @@ export const useActivities = () => {
         inFlow: row.in_flow,
         notes: row.notes ?? undefined,
         topics: row.topics ?? undefined,
+        feelings: row.feelings ?? undefined,
         aeiou: {
           activities: row.activities ?? undefined,
           environments: row.environments ?? undefined,
@@ -70,6 +71,7 @@ export const useActivities = () => {
           in_flow: activityData.inFlow,
           notes: activityData.notes ?? null,
           topics: activityData.topics ?? null,
+          feelings: activityData.feelings ?? null,
           activities: activityData.aeiou?.activities ?? null,
           environments: activityData.aeiou?.environments ?? null,
           interactions: activityData.aeiou?.interactions ?? null,
@@ -90,6 +92,7 @@ export const useActivities = () => {
         inFlow: data.in_flow,
         notes: data.notes ?? undefined,
         topics: data.topics ?? undefined,
+        feelings: data.feelings ?? undefined,
         aeiou: {
           activities: data.activities ?? undefined,
           environments: data.environments ?? undefined,
@@ -122,6 +125,7 @@ export const useActivities = () => {
           in_flow: activityData.inFlow,
           notes: activityData.notes ?? null,
           topics: activityData.topics ?? null,
+          feelings: activityData.feelings ?? null,
           activities: activityData.aeiou?.activities ?? null,
           environments: activityData.aeiou?.environments ?? null,
           interactions: activityData.aeiou?.interactions ?? null,
@@ -144,6 +148,7 @@ export const useActivities = () => {
         inFlow: data.in_flow,
         notes: data.notes ?? undefined,
         topics: data.topics ?? undefined,
+        feelings: data.feelings ?? undefined,
         aeiou: {
           activities: data.activities ?? undefined,
           environments: data.environments ?? undefined,
