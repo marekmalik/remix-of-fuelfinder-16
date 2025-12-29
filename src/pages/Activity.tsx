@@ -15,6 +15,7 @@ import { Activity as ActivityType, AEIOUDetails, LikertLevel } from "@/types/act
 import LikertScale from "@/components/LikertScale";
 import FlowToggle from "@/components/FlowToggle";
 import AEIOUSection from "@/components/AEIOUSection";
+import FeelingsSection from "@/components/FeelingsSection";
 import TagInput from "@/components/TagInput";
 import { useUserTags } from "@/hooks/useUserTags";
 import { useTagFrequencies } from "@/hooks/useTagFrequencies";
@@ -42,6 +43,7 @@ const Activity = () => {
   const [notes, setNotes] = useState('');
   const [aeiou, setAeiou] = useState<AEIOUDetails>({});
   const [topics, setTopics] = useState<string[]>([]);
+  const [feelings, setFeelings] = useState<string[]>([]);
   const [activityDate, setActivityDate] = useState<Date>(new Date());
   const [timeValue, setTimeValue] = useState(format(new Date(), "HH:mm"));
   const [saving, setSaving] = useState(false);
@@ -72,6 +74,7 @@ const Activity = () => {
       setNotes(''); // Clear notes when duplicating
       setAeiou(duplicateData.aeiou || {});
       setTopics(duplicateData.topics || []);
+      setFeelings(duplicateData.feelings || []);
       // Keep current date/time for duplicates
     } else if (isEditing && existingActivity) {
       setName(existingActivity.name);
@@ -81,6 +84,7 @@ const Activity = () => {
       setNotes(existingActivity.notes || '');
       setAeiou(existingActivity.aeiou || {});
       setTopics(existingActivity.topics || []);
+      setFeelings(existingActivity.feelings || []);
       setActivityDate(new Date(existingActivity.createdAt));
       setTimeValue(format(new Date(existingActivity.createdAt), "HH:mm"));
       setDateTimeEdited(true); // When editing, show as edited
@@ -152,6 +156,7 @@ const Activity = () => {
       notes: notes.trim() || undefined,
       aeiou: Object.values(aeiou).some(v => v && v.length > 0) ? aeiou : undefined,
       topics: !preferences.hideTopics && topics.length > 0 ? topics : undefined,
+      feelings: feelings.length > 0 ? feelings : undefined,
       createdAt: activityDate,
     };
 
@@ -356,6 +361,8 @@ const Activity = () => {
             )}
 
             <AEIOUSection values={aeiou} onChange={setAeiou} />
+
+            <FeelingsSection selectedFeelings={feelings} onChange={setFeelings} />
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">

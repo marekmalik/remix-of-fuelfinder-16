@@ -196,10 +196,6 @@ const ActivityForm = ({ onSubmit, onCancel }: ActivityFormProps) => {
 
         <AEIOUSection values={aeiou} onChange={setAeiou} />
 
-        <div className="p-4 bg-pink-500 text-white rounded-lg font-bold text-center">
-          FEELINGS TEST PLACEHOLDER
-        </div>
-
         <FeelingsSection selectedFeelings={feelings} onChange={setFeelings} />
 
         <div className="space-y-2">
