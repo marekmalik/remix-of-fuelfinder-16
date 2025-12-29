@@ -79,7 +79,21 @@ export function usePushNotifications() {
     const fetchVapidKey = async () => {
       try {
         console.log('[Push] Fetching VAPID key...');
-        const { data, error } = await supabase.functions.invoke('get-vapid-key');
+        
+        // Get the current session to pass the auth token
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+        
+        if (!accessToken) {
+          console.error('[Push] No access token available');
+          return;
+        }
+        
+        const { data, error } = await supabase.functions.invoke('get-vapid-key', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
         console.log('[Push] VAPID response:', { data, error });
         
         if (error) {
