@@ -107,65 +107,65 @@ const Index = () => {
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-6 relative">
-        {/* Key forces full remount on tab switch to avoid iOS GPU cache artifacts */}
+        {/* Journal View - always in DOM, hidden via CSS for instant switching */}
         <div 
-          key={viewMode} 
-          className="animate-fade-in bg-background"
-          style={{ willChange: 'opacity, transform' }}
+          className={`${viewMode === 'journal' ? 'block' : 'hidden'}`}
         >
-          {viewMode === 'journal' && (
-            <div className="space-y-4">
-              {isLoading && activities.length === 0 ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="space-y-4">
+            {isLoading && activities.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : activities.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
+                  <BookOpen className="w-8 h-8 text-muted-foreground" />
                 </div>
-              ) : activities.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
-                    <BookOpen className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="font-medium text-foreground mb-2">Your Journal is Empty</h3>
-                  <p className="text-sm text-muted-foreground max-w-xs mb-6">
-                    Start tracking your activities to discover patterns in your energy and engagement.
-                  </p>
-                  <button
-                    onClick={() => setViewMode('add')}
-                    className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium transition-transform hover:scale-105 active:scale-95"
-                  >
-                    Log Your First Activity
-                  </button>
+                <h3 className="font-medium text-foreground mb-2">Your Journal is Empty</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mb-6">
+                  Start tracking your activities to discover patterns in your energy and engagement.
+                </p>
+                <button
+                  onClick={() => setViewMode('add')}
+                  className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium transition-transform hover:scale-105 active:scale-95"
+                >
+                  Log Your First Activity
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-foreground">Recent Activities</h2>
+                  <span className="text-sm text-muted-foreground">{activities.length} entries</span>
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-foreground">Recent Activities</h2>
-                    <span className="text-sm text-muted-foreground">{activities.length} entries</span>
-                  </div>
-                  <div className="space-y-3">
-                    {activities.map((activity, index) => (
-                      <div 
-                        key={activity.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <ActivityCard 
-                          activity={activity}
-                          onDelete={handleDeleteActivity}
-                          onDuplicate={handleDuplicateActivity}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+                <div className="space-y-3">
+                  {activities.map((activity, index) => (
+                    <div 
+                      key={activity.id}
+                      className="animate-entry-slide-up"
+                      style={{ 
+                        animationDelay: `${Math.min(index * 35, 350)}ms`,
+                        opacity: 0
+                      }}
+                    >
+                      <ActivityCard 
+                        activity={activity}
+                        onDelete={handleDeleteActivity}
+                        onDuplicate={handleDuplicateActivity}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
 
-          {viewMode === 'analytics' && (
-            <div className="min-h-[calc(100vh-200px)]">
-              <AnalyticsView activities={activities} />
-            </div>
-          )}
+        {/* Analytics View - always in DOM, hidden via CSS for instant switching */}
+        <div 
+          className={`min-h-[calc(100vh-200px)] ${viewMode === 'analytics' ? 'block' : 'hidden'}`}
+        >
+          <AnalyticsView activities={activities} />
         </div>
       </main>
 
