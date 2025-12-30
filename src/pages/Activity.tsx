@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { format, isToday, formatDistanceToNow, differenceInMinutes } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +50,7 @@ const Activity = () => {
   const [saving, setSaving] = useState(false);
   const [dateTimeExpanded, setDateTimeExpanded] = useState(false);
   const [dateTimeEdited, setDateTimeEdited] = useState(false);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
   
   const { getTagsByCategory, addTag } = useUserTags();
   const { sortByFrequency } = useTagFrequencies();
@@ -94,6 +95,14 @@ const Activity = () => {
       setDateTimeExpanded(true); // Auto-expand when editing
     }
   }, [isEditing, existingActivity, location.state]);
+
+  // Auto-resize notes textarea when content is loaded (edit mode)
+  useEffect(() => {
+    if (notesRef.current && notes) {
+      notesRef.current.style.height = 'auto';
+      notesRef.current.style.height = notesRef.current.scrollHeight + 'px';
+    }
+  }, [notes]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -413,6 +422,7 @@ const Activity = () => {
                 Additional Notes (optional)
               </label>
               <Textarea
+                ref={notesRef}
                 value={notes}
                 onChange={(e) => {
                   setNotes(e.target.value);
