@@ -98,11 +98,18 @@ const Activity = () => {
 
   // Auto-resize notes textarea when content is loaded (edit mode)
   useEffect(() => {
-    if (notesRef.current && notes) {
-      notesRef.current.style.height = 'auto';
-      notesRef.current.style.height = notesRef.current.scrollHeight + 'px';
-    }
-  }, [notes]);
+    const resizeTextarea = () => {
+      if (notesRef.current) {
+        notesRef.current.style.height = 'auto';
+        notesRef.current.style.height = notesRef.current.scrollHeight + 'px';
+      }
+    };
+    // Use requestAnimationFrame to ensure DOM is painted before measuring
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(resizeTextarea);
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [notes, isEditing, existingActivity]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
