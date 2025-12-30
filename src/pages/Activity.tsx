@@ -257,21 +257,31 @@ const Activity = () => {
               <label className="text-sm font-medium text-foreground">
                 What are you logging?
               </label>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-1 p-1 rounded-full bg-secondary border border-border w-full">
                 <Button
                   type="button"
-                  variant={entryType === 'activity' ? 'default' : 'outline'}
-                  className="flex-1"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setEntryType('activity')}
+                  className={`flex-1 rounded-full px-3 py-2 h-auto transition-all ${
+                    entryType === 'activity'
+                      ? "bg-background shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                  }`}
                   data-testid="button-entry-type-activity"
                 >
                   I did something
                 </Button>
                 <Button
                   type="button"
-                  variant={entryType === 'event' ? 'default' : 'outline'}
-                  className="flex-1"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setEntryType('event')}
+                  className={`flex-1 rounded-full px-3 py-2 h-auto transition-all ${
+                    entryType === 'event'
+                      ? "bg-background shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                  }`}
                   data-testid="button-entry-type-event"
                 >
                   Something happened
