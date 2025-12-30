@@ -61,7 +61,7 @@ const Index = () => {
     navigate('/settings');
   };
 
-  if (authLoading || activitiesLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -72,6 +72,8 @@ const Index = () => {
   if (!user) {
     return null;
   }
+
+  const isLoading = activitiesLoading;
 
   return (
     <div className="min-h-screen bg-background pb-24 isolate">
@@ -113,7 +115,11 @@ const Index = () => {
         >
           {viewMode === 'journal' && (
             <div className="space-y-4">
-              {activities.length === 0 ? (
+              {isLoading && activities.length === 0 ? (
+                <div className="flex items-center justify-center py-16">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : activities.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
                     <BookOpen className="w-8 h-8 text-muted-foreground" />
