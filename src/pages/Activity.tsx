@@ -414,9 +414,13 @@ const Activity = () => {
               </label>
               <Textarea
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={(e) => {
+                  setNotes(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
                 placeholder="Any other thoughts or reflections..."
-                className="min-h-[80px] resize-none"
+                className="min-h-[80px] resize-none overflow-hidden"
               />
             </div>
           </div>
