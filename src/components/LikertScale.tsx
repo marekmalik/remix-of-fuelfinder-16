@@ -45,18 +45,18 @@ const behavioralIndicators = {
   },
   event: {
     energy: {
-      1: "This left me feeling heavy and depleted; my energy dropped fast.",
-      2: "This slowly drained me; I felt myself fading afterward.",
-      3: "This didn't really affect my energy; I felt about the same.",
-      4: "This gave me a boost; I felt more awake and lively.",
-      5: "This strongly energized me; I felt driven and my energy stayed high or even grew.",
+      1: "The event took energy from me; I felt heavy and my energy dropped fast.",
+      2: "The event slowly drained me; I could stay through it, but I felt myself fading.",
+      3: "The event neither drained nor fueled me; my energy stayed about the same.",
+      4: "The event gave me energy; I felt more awake and lively during it.",
+      5: "The event strongly fueled me; I felt driven, could have stayed longer, and my energy stayed high or even grew.",
     },
     engagement: {
-      1: "My mind was somewhere else; I couldn't focus on what was happening.",
-      2: "I noticed it briefly, but my attention kept drifting away.",
-      3: "I was present and aware, without pulling away or going deeper.",
-      4: "I was focused on what happened and could stay with it without effort.",
-      5: "I was fully absorbed; I naturally went deeper and forgot about other things.",
+      1: "My mind was somewhere else; I had to force myself to pay attention to what was happening.",
+      2: "I was only partly there; my attention kept drifting away.",
+      3: "I was present and followed what was happening, but I didn't feel pulled in.",
+      4: "I was focused on what was happening and it felt easy to stay with it.",
+      5: "I was fully absorbed; I got pulled in naturally and forgot about other things.",
     },
   },
 };
