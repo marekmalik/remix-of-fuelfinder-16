@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           energy: number
           engagement: number
+          entry_type: string
           environments: string[] | null
           feelings: string[] | null
           id: string
@@ -37,6 +38,7 @@ export type Database = {
           created_at?: string
           energy: number
           engagement: number
+          entry_type?: string
           environments?: string[] | null
           feelings?: string[] | null
           id?: string
@@ -54,6 +56,7 @@ export type Database = {
           created_at?: string
           energy?: number
           engagement?: number
+          entry_type?: string
           environments?: string[] | null
           feelings?: string[] | null
           id?: string

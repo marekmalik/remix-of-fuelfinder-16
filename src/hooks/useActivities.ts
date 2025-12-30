@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Activity, LikertLevel } from '@/types/activity';
+import { Activity, LikertLevel, EntryType } from '@/types/activity';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -28,6 +28,7 @@ export const useActivities = () => {
       const mapped: Activity[] = (data || []).map((row) => ({
         id: row.id,
         name: row.name,
+        entryType: (row.entry_type as EntryType) || 'activity',
         engagement: row.engagement as LikertLevel,
         energy: row.energy as LikertLevel,
         inFlow: row.in_flow,
@@ -66,6 +67,7 @@ export const useActivities = () => {
         .insert({
           user_id: user.id,
           name: activityData.name,
+          entry_type: activityData.entryType || 'activity',
           engagement: activityData.engagement,
           energy: activityData.energy,
           in_flow: activityData.inFlow,
@@ -87,6 +89,7 @@ export const useActivities = () => {
       const newActivity: Activity = {
         id: data.id,
         name: data.name,
+        entryType: (data.entry_type as EntryType) || 'activity',
         engagement: data.engagement as LikertLevel,
         energy: data.energy as LikertLevel,
         inFlow: data.in_flow,
@@ -120,6 +123,7 @@ export const useActivities = () => {
         .from('activities')
         .update({
           name: activityData.name,
+          entry_type: activityData.entryType || 'activity',
           engagement: activityData.engagement,
           energy: activityData.energy,
           in_flow: activityData.inFlow,
@@ -143,6 +147,7 @@ export const useActivities = () => {
       const updatedActivity: Activity = {
         id: data.id,
         name: data.name,
+        entryType: (data.entry_type as EntryType) || 'activity',
         engagement: data.engagement as LikertLevel,
         energy: data.energy as LikertLevel,
         inFlow: data.in_flow,

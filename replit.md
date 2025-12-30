@@ -39,12 +39,13 @@ Preferred communication style: Simple, everyday language.
 - **Pull-to-Refresh**: Native-like refresh gesture on mobile
 - **Confetti Celebrations**: Visual feedback for streaks and milestones using canvas-confetti
 
-### Activity Data Model
-Activities capture:
+### Entry Data Model
+Entries (activities or events) capture:
+- Entry type: 'activity' (things you did) or 'event' (things that happened to you)
 - Name and timestamp
 - Engagement level (1-5 Likert scale)
 - Energy level (1-5 Likert scale)
-- Flow state boolean
+- Flow state boolean (only for activities, hidden for events)
 - Topics tags (user-defined categories)
 - Feelings (pleasant/unpleasant emotion vocabulary)
 - AEIOU contextual tags (activities, environments, interactions, objects, users)

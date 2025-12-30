@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Activity as ActivityType, AEIOUDetails, LikertLevel } from "@/types/activity";
+import { Activity as ActivityType, AEIOUDetails, LikertLevel, EntryType } from "@/types/activity";
 import LikertScale from "@/components/LikertScale";
 import FlowToggle from "@/components/FlowToggle";
 import AEIOUSection from "@/components/AEIOUSection";
@@ -36,6 +36,7 @@ const Activity = () => {
   const isEditing = !!id;
   const existingActivity = isEditing ? activities.find(a => a.id === id) : null;
 
+  const [entryType, setEntryType] = useState<EntryType>('activity');
   const [name, setName] = useState('');
   const [engagement, setEngagement] = useState<LikertLevel>(3);
   const [energy, setEnergy] = useState<LikertLevel>(3);
@@ -67,6 +68,7 @@ const Activity = () => {
     const duplicateData = location.state?.duplicateFrom;
     
     if (duplicateData) {
+      setEntryType(duplicateData.entryType || 'activity');
       setName(duplicateData.name || '');
       setEngagement(duplicateData.engagement || 3);
       setEnergy(duplicateData.energy || 3);
@@ -77,6 +79,7 @@ const Activity = () => {
       setFeelings(duplicateData.feelings || []);
       // Keep current date/time for duplicates
     } else if (isEditing && existingActivity) {
+      setEntryType(existingActivity.entryType || 'activity');
       setName(existingActivity.name);
       setEngagement(existingActivity.engagement);
       setEnergy(existingActivity.energy);
@@ -150,9 +153,10 @@ const Activity = () => {
 
     const activityData: Omit<ActivityType, 'id'> = {
       name: name.trim(),
+      entryType,
       engagement,
       energy,
-      inFlow: finalInFlow,
+      inFlow: entryType === 'event' ? false : finalInFlow,
       notes: notes.trim() || undefined,
       aeiou: Object.values(aeiou).some(v => v && v.length > 0) ? aeiou : undefined,
       topics: !preferences.hideTopics && topics.length > 0 ? topics : undefined,
@@ -236,7 +240,7 @@ const Activity = () => {
               <ArrowLeft className="w-5 h-5 text-foreground" />
             </button>
             <h1 className="font-semibold text-foreground">
-              {isEditing ? 'Edit Activity' : 'New Activity'}
+              {isEditing ? 'Edit Entry' : 'New Entry'}
             </h1>
           </div>
         </div>
@@ -248,16 +252,44 @@ const Activity = () => {
       <main className="max-w-lg mx-auto px-4 py-6 pb-24">
         <form onSubmit={handleSubmit} className="flex flex-col min-h-[calc(100vh-5rem)]">
           <div className="flex-1 space-y-6">
+            {/* Entry Type Toggle */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
-                What were you doing?
+                What are you logging?
+              </label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={entryType === 'activity' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setEntryType('activity')}
+                  data-testid="button-entry-type-activity"
+                >
+                  I did something
+                </Button>
+                <Button
+                  type="button"
+                  variant={entryType === 'event' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setEntryType('event')}
+                  data-testid="button-entry-type-event"
+                >
+                  Something happened
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                {entryType === 'activity' ? 'What were you doing?' : 'What happened?'}
               </label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Team brainstorming session"
+                placeholder={entryType === 'activity' ? 'e.g., Team brainstorming session' : 'e.g., Got unexpected feedback'}
                 className="text-base"
                 required
+                data-testid="input-activity-name"
               />
             </div>
 
@@ -355,8 +387,8 @@ const Activity = () => {
               type="energy"
             />
 
-            {/* Flow Toggle - conditionally rendered */}
-            {!preferences.hideFlowToggle && (
+            {/* Flow Toggle - conditionally rendered (hidden for events) */}
+            {!preferences.hideFlowToggle && entryType === 'activity' && (
               <FlowToggle active={inFlow} onChange={setInFlow} />
             )}
 
@@ -392,7 +424,7 @@ const Activity = () => {
                 ) : (
                   <Plus className="w-5 h-5 mr-2" />
                 )}
-                {saving ? 'Saving...' : isEditing ? 'Save Changes' : 'Log Activity'}
+                {saving ? 'Saving...' : isEditing ? 'Save Changes' : 'Log Entry'}
               </Button>
             </div>
           </div>

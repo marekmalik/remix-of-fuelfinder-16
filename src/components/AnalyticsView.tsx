@@ -89,7 +89,8 @@ const exportToCSV = async (activities: Activity[]) => {
   const headers = [
     'Date',
     'Time',
-    'Activity',
+    'Entry Type',
+    'Name',
     'Engagement (1-5)',
     'Engagement Level',
     'Energy (1-5)',
@@ -110,6 +111,7 @@ const exportToCSV = async (activities: Activity[]) => {
     return [
       format(date, 'yyyy-MM-dd'),
       format(date, 'HH:mm'),
+      activity.entryType === 'event' ? 'Event' : 'Activity',
       escapeCSV(activity.name),
       activity.engagement,
       escapeCSV(likertEngagementLabels[activity.engagement]),
