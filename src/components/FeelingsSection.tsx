@@ -102,7 +102,7 @@ const FeelingTile = ({
     )}>
       {feeling.name}
     </p>
-    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+    <p className="text-xs text-muted-foreground mt-1" style={{ lineHeight: 1.3 }}>
       {feeling.description}
     </p>
   </button>
