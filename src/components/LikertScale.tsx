@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
-import { LikertLevel } from "@/types/activity";
+import { LikertLevel, EntryType } from "@/types/activity";
 
 interface LikertScaleProps {
   value: LikertLevel;
   onChange: (value: LikertLevel) => void;
   label: string;
   type: 'energy' | 'engagement';
+  entryType?: EntryType;
 }
 
 const likertLabels = {
@@ -26,24 +27,43 @@ const likertLabels = {
 };
 
 const behavioralIndicators = {
-  energy: {
-    1: "The activity takes energy from me; I feel heavy and my energy drops fast.",
-    2: "The activity slowly drains me; I can continue, but I feel myself fading.",
-    3: "The activity neither drains nor fuels me; my energy stays about the same.",
-    4: "The activity gives me energy; I feel more awake and lively while doing it.",
-    5: "The activity strongly fuels me; I feel driven, could go faster or longer, and my energy stays high or even grows.",
+  activity: {
+    energy: {
+      1: "The activity takes energy from me; I feel heavy and my energy drops fast.",
+      2: "The activity slowly drains me; I can continue, but I feel myself fading.",
+      3: "The activity neither drains nor fuels me; my energy stays about the same.",
+      4: "The activity gives me energy; I feel more awake and lively while doing it.",
+      5: "The activity strongly fuels me; I feel driven, could go faster or longer, and my energy stays high or even grows.",
+    },
+    engagement: {
+      1: "My mind is somewhere else; I avoid the activity or push myself to get through it.",
+      2: "I touch the activity briefly, but my attention keeps drifting away.",
+      3: "I stay with the activity and do what's needed, without pulling away or going deeper.",
+      4: "I'm focused on the activity and can stay with it without effort.",
+      5: "I'm fully absorbed; I naturally go deeper and forget about other things.",
+    },
   },
-  engagement: {
-    1: "My mind is somewhere else; I avoid the activity or push myself to get through it.",
-    2: "I touch the activity briefly, but my attention keeps drifting away.",
-    3: "I stay with the activity and do what's needed, without pulling away or going deeper.",
-    4: "I'm focused on the activity and can stay with it without effort.",
-    5: "I'm fully absorbed; I naturally go deeper and forget about other things.",
+  event: {
+    energy: {
+      1: "This left me feeling heavy and depleted; my energy dropped fast.",
+      2: "This slowly drained me; I felt myself fading afterward.",
+      3: "This didn't really affect my energy; I felt about the same.",
+      4: "This gave me a boost; I felt more awake and lively.",
+      5: "This strongly energized me; I felt driven and my energy stayed high or even grew.",
+    },
+    engagement: {
+      1: "My mind was somewhere else; I couldn't focus on what was happening.",
+      2: "I noticed it briefly, but my attention kept drifting away.",
+      3: "I was present and aware, without pulling away or going deeper.",
+      4: "I was focused on what happened and could stay with it without effort.",
+      5: "I was fully absorbed; I naturally went deeper and forgot about other things.",
+    },
   },
 };
 
-const LikertScale = ({ value, onChange, label, type }: LikertScaleProps) => {
+const LikertScale = ({ value, onChange, label, type, entryType = 'activity' }: LikertScaleProps) => {
   const labels = likertLabels[type];
+  const indicators = behavioralIndicators[entryType][type];
   
   const getColorClass = (level: number) => {
     if (type === 'energy') {
@@ -97,7 +117,7 @@ const LikertScale = ({ value, onChange, label, type }: LikertScaleProps) => {
       </div>
       
       <p className="text-xs text-muted-foreground italic leading-relaxed">
-        {behavioralIndicators[type][value as keyof typeof behavioralIndicators[typeof type]]}
+        {indicators[value as keyof typeof indicators]}
       </p>
     </div>
   );

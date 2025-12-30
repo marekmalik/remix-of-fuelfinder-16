@@ -388,6 +388,7 @@ const Activity = () => {
               onChange={setEngagement}
               label="Engagement Level"
               type="engagement"
+              entryType={entryType}
             />
 
             <LikertScale
@@ -395,6 +396,7 @@ const Activity = () => {
               onChange={setEnergy}
               label="Energy Level"
               type="energy"
+              entryType={entryType}
             />
 
             {/* Flow Toggle - conditionally rendered (hidden for events) */}
