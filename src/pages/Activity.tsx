@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { format, isToday, formatDistanceToNow, differenceInMinutes } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
@@ -96,20 +96,62 @@ const Activity = () => {
     }
   }, [isEditing, existingActivity, location.state]);
 
-  // Auto-resize notes textarea when content is loaded (edit mode)
+  // Debounce ref for shrink operations
+  const shrinkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastHeightRef = useRef<number>(80);
+
+  // Auto-resize: grow immediately, shrink with debounce
+  const adjustTextareaHeight = useCallback((textarea: HTMLTextAreaElement) => {
+    // Clear any pending shrink
+    if (shrinkTimeoutRef.current) {
+      clearTimeout(shrinkTimeoutRef.current);
+      shrinkTimeoutRef.current = null;
+    }
+
+    const currentHeight = textarea.offsetHeight;
+    const scrollHeight = textarea.scrollHeight;
+
+    if (scrollHeight > currentHeight) {
+      // Growing: apply immediately
+      textarea.style.height = scrollHeight + 'px';
+      lastHeightRef.current = scrollHeight;
+    } else if (scrollHeight < lastHeightRef.current) {
+      // Content deleted - debounce the shrink to avoid jumping
+      shrinkTimeoutRef.current = setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (notesRef.current) {
+            // Measure true height by temporarily setting to min
+            const minHeight = 80;
+            notesRef.current.style.height = minHeight + 'px';
+            const newHeight = Math.max(notesRef.current.scrollHeight, minHeight);
+            notesRef.current.style.height = newHeight + 'px';
+            lastHeightRef.current = newHeight;
+          }
+        });
+      }, 500);
+    }
+  }, []);
+
+  // Initial resize for edit mode - needs to measure from scratch
+  useLayoutEffect(() => {
+    if (notesRef.current) {
+      const textarea = notesRef.current;
+      const minHeight = 80;
+      textarea.style.height = minHeight + 'px';
+      const newHeight = Math.max(textarea.scrollHeight, minHeight);
+      textarea.style.height = newHeight + 'px';
+      lastHeightRef.current = newHeight;
+    }
+  }, [isEditing, existingActivity]);
+
+  // Cleanup timeout on unmount
   useEffect(() => {
-    const resizeTextarea = () => {
-      if (notesRef.current) {
-        notesRef.current.style.height = 'auto';
-        notesRef.current.style.height = notesRef.current.scrollHeight + 'px';
+    return () => {
+      if (shrinkTimeoutRef.current) {
+        clearTimeout(shrinkTimeoutRef.current);
       }
     };
-    // Use requestAnimationFrame to ensure DOM is painted before measuring
-    const rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(resizeTextarea);
-    });
-    return () => cancelAnimationFrame(rafId);
-  }, [notes, isEditing, existingActivity]);
+  }, []);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -433,8 +475,7 @@ const Activity = () => {
                 value={notes}
                 onChange={(e) => {
                   setNotes(e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
+                  adjustTextareaHeight(e.target);
                 }}
                 placeholder="Any other thoughts or reflections..."
                 className="min-h-[80px] resize-none overflow-hidden"
