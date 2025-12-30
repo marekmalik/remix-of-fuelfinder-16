@@ -68,7 +68,7 @@ const getTagInsights = (activities: Activity[], hideTopics: boolean): TagInsight
 const MAX_TAGS_PER_CATEGORY = 5;
 const MAX_ACTIVITIES_SHOWN = 5;
 
-const exportToCSV = (activities: Activity[]) => {
+const exportToCSV = async (activities: Activity[]) => {
   if (activities.length === 0) {
     toast.error("No activities to export");
     return;
@@ -131,17 +131,47 @@ const exportToCSV = (activities: Activity[]) => {
   
   const BOM = '\uFEFF';
   const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' });
+  const filename = `fuelfinder-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
   
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `fuelfinder-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-  
-  toast.success(`Exported ${activities.length} activities`);
+  try {
+    if ('showSaveFilePicker' in window) {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: filename,
+        types: [{
+          description: 'CSV file',
+          accept: { 'text/csv': ['.csv'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      toast.success(`Exported ${activities.length} activities`);
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      setTimeout(() => {
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }, 0);
+      
+      toast.success(`Exported ${activities.length} activities`);
+    }
+  } catch (error) {
+    if ((error as Error).name !== 'AbortError') {
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success(`Exported ${activities.length} activities - check your downloads`);
+    }
+  }
 };
 
 const TagInsightsList = ({ insights, colorClass }: { insights: TagInsight[]; colorClass: string }) => {
