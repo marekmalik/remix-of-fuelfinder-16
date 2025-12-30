@@ -33,6 +33,15 @@ const PLEASANT_FEELINGS: Feeling[] = [
   { name: "Empowered", description: "I feel I have choices and I can make things happen." },
   { name: "Tender", description: "I feel gentle and warm, and I want to be kind." },
   { name: "Grounded", description: "I feel steady and present, like I'm here and I can breathe." },
+  { name: "Surprised", description: "I feel something unexpected just happened, and my attention snaps to it." },
+  { name: "Encouraged", description: "I feel supported, like someone (or something) gave me a boost to keep going." },
+  { name: "Determined", description: "I feel decided to keep trying, even if it's hard." },
+  { name: "Free", description: "I feel unburdened and able to be myself, without pressure or rules closing in." },
+  { name: "Balanced", description: "I feel steady and even, like I'm not pulled too far in any direction." },
+  { name: "Happy", description: "I feel genuinely good inside, like life is okay and I can enjoy the moment." },
+  { name: "Amused", description: "I feel entertained, like something is funny or pleasantly silly." },
+  { name: "Warm", description: "I feel a gentle inner warmth, like kindness or closeness is around me." },
+  { name: "Well", description: "I feel generally okay in my body and mind, like I'm doing alright." },
 ];
 
 const UNPLEASANT_FEELINGS: Feeling[] = [
