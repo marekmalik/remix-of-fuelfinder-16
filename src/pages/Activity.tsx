@@ -51,6 +51,16 @@ const Activity = () => {
   const [dateTimeExpanded, setDateTimeExpanded] = useState(false);
   const [dateTimeEdited, setDateTimeEdited] = useState(false);
   const notesRef = useRef<HTMLTextAreaElement>(null);
+  const initialNotesLoadedRef = useRef(false);
+  const lastEditIdRef = useRef<string | undefined>(undefined);
+  
+  // Reset the initial notes flag when switching between entries
+  useEffect(() => {
+    if (id !== lastEditIdRef.current) {
+      initialNotesLoadedRef.current = false;
+      lastEditIdRef.current = id;
+    }
+  }, [id]);
   
   const { getTagsByCategory, addTag } = useUserTags();
   const { sortByFrequency } = useTagFrequencies();
@@ -132,17 +142,22 @@ const Activity = () => {
     }
   }, []);
 
-  // Initial resize for edit mode - needs to measure from scratch
+  // Initial resize for edit mode - runs once after notes state is synced
   useLayoutEffect(() => {
-    if (notesRef.current) {
-      const textarea = notesRef.current;
-      const minHeight = 80;
-      textarea.style.height = minHeight + 'px';
-      const newHeight = Math.max(textarea.scrollHeight, minHeight);
-      textarea.style.height = newHeight + 'px';
-      lastHeightRef.current = newHeight;
+    // Only resize once: when editing, activity is loaded, and notes state matches persisted value
+    const persistedNotes = existingActivity?.notes || '';
+    if (isEditing && existingActivity && notes === persistedNotes && !initialNotesLoadedRef.current) {
+      initialNotesLoadedRef.current = true;
+      if (notesRef.current) {
+        const textarea = notesRef.current;
+        const minHeight = 80;
+        textarea.style.height = minHeight + 'px';
+        const newHeight = Math.max(textarea.scrollHeight, minHeight);
+        textarea.style.height = newHeight + 'px';
+        lastHeightRef.current = newHeight;
+      }
     }
-  }, [isEditing, existingActivity]);
+  }, [isEditing, existingActivity, notes]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
