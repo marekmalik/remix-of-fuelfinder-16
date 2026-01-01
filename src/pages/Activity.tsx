@@ -125,6 +125,20 @@ const Activity = () => {
       // Growing: apply immediately
       textarea.style.height = scrollHeight + 'px';
       lastHeightRef.current = scrollHeight;
+      
+      // After resize, ensure cursor stays visible above the bottom nav
+      requestAnimationFrame(() => {
+        const rect = textarea.getBoundingClientRect();
+        const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+        const bottomNavHeight = 96; // pb-24 = 6rem = 96px
+        const safePadding = 20;
+        const visibleBottom = viewportHeight - bottomNavHeight - safePadding;
+        
+        if (rect.bottom > visibleBottom) {
+          const overflow = rect.bottom - visibleBottom;
+          window.scrollBy({ top: overflow, behavior: 'smooth' });
+        }
+      });
     } else if (scrollHeight < lastHeightRef.current) {
       // Content deleted - debounce the shrink to avoid jumping
       shrinkTimeoutRef.current = setTimeout(() => {
