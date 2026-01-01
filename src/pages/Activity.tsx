@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { format, isToday, formatDistanceToNow, differenceInMinutes } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
@@ -103,6 +103,22 @@ const Activity = () => {
       setTimeValue(format(new Date(existingActivity.createdAt), "HH:mm"));
       setDateTimeEdited(true); // When editing, show as edited
       setDateTimeExpanded(true); // Auto-expand when editing
+      
+      // Resize textarea after React commits the state update
+      // Use setTimeout to wait for React's async state commit, then rAF for paint
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (notesRef.current) {
+            const textarea = notesRef.current;
+            const minHeight = 80;
+            textarea.style.height = minHeight + 'px';
+            const newHeight = Math.max(textarea.scrollHeight, minHeight);
+            textarea.style.height = newHeight + 'px';
+            lastHeightRef.current = newHeight;
+            initialNotesLoadedRef.current = true;
+          }
+        });
+      }, 0);
     }
   }, [isEditing, existingActivity, location.state]);
 
@@ -158,23 +174,6 @@ const Activity = () => {
       }, 500);
     }
   }, [isEditing]);
-
-  // Initial resize for edit mode - runs once after notes state is synced
-  useLayoutEffect(() => {
-    // Only resize once: when editing, activity is loaded, and notes state matches persisted value
-    const persistedNotes = existingActivity?.notes || '';
-    if (isEditing && existingActivity && notes === persistedNotes && !initialNotesLoadedRef.current) {
-      initialNotesLoadedRef.current = true;
-      if (notesRef.current) {
-        const textarea = notesRef.current;
-        const minHeight = 80;
-        textarea.style.height = minHeight + 'px';
-        const newHeight = Math.max(textarea.scrollHeight, minHeight);
-        textarea.style.height = newHeight + 'px';
-        lastHeightRef.current = newHeight;
-      }
-    }
-  }, [isEditing, existingActivity, notes]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
