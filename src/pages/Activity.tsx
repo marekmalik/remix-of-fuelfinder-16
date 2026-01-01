@@ -127,18 +127,21 @@ const Activity = () => {
       lastHeightRef.current = scrollHeight;
       
       // After resize, ensure cursor stays visible above the bottom nav
-      requestAnimationFrame(() => {
-        const rect = textarea.getBoundingClientRect();
-        const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-        const bottomNavHeight = 96; // pb-24 = 6rem = 96px
-        const safePadding = 20;
-        const visibleBottom = viewportHeight - bottomNavHeight - safePadding;
-        
-        if (rect.bottom > visibleBottom) {
-          const overflow = rect.bottom - visibleBottom;
-          window.scrollBy({ top: overflow, behavior: 'smooth' });
-        }
-      });
+      // Only run for user-driven typing, not initial edit hydration
+      if (initialNotesLoadedRef.current || !isEditing) {
+        requestAnimationFrame(() => {
+          const rect = textarea.getBoundingClientRect();
+          const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+          const bottomNavHeight = 96; // pb-24 = 6rem = 96px
+          const safePadding = 20;
+          const visibleBottom = viewportHeight - bottomNavHeight - safePadding;
+          
+          if (rect.bottom > visibleBottom) {
+            const overflow = rect.bottom - visibleBottom;
+            window.scrollBy({ top: overflow, behavior: 'smooth' });
+          }
+        });
+      }
     } else if (scrollHeight < lastHeightRef.current) {
       // Content deleted - debounce the shrink to avoid jumping
       shrinkTimeoutRef.current = setTimeout(() => {
@@ -154,7 +157,7 @@ const Activity = () => {
         });
       }, 500);
     }
-  }, []);
+  }, [isEditing]);
 
   // Initial resize for edit mode - runs once after notes state is synced
   useLayoutEffect(() => {
