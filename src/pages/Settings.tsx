@@ -16,10 +16,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, LogOut, Plus, X, Tag, Loader2, Pencil, Bell, Palette, Sliders } from "lucide-react";
+import { ArrowLeft, LogOut, Plus, X, Tag, Loader2, Pencil, Bell, Palette, Sliders, Sparkles, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAIKeys } from "@/hooks/useAIKeys";
 
 // Initial seed tags for each category - will be saved to DB on first load
 const SEED_TAGS: Record<TagCategory, string[]> = {
@@ -60,6 +61,22 @@ const Settings = () => {
   // Dialog states
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; tagId: string; tagName: string } | null>(null);
   const [renameDialog, setRenameDialog] = useState<{ open: boolean; tagId: string; tagName: string; newName: string } | null>(null);
+
+  // AI Keys
+  const { keys: aiKeys, saveKeys: saveAIKeys, loading: aiKeysLoading } = useAIKeys();
+  const [openaiKeyInput, setOpenaiKeyInput] = useState('');
+  const [geminiKeyInput, setGeminiKeyInput] = useState('');
+  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [aiKeysInitialized, setAiKeysInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!aiKeysLoading && !aiKeysInitialized) {
+      setOpenaiKeyInput(aiKeys.openaiKey);
+      setGeminiKeyInput(aiKeys.geminiKey);
+      setAiKeysInitialized(true);
+    }
+  }, [aiKeysLoading, aiKeys, aiKeysInitialized]);
 
   // Seed tags on first load if user has no tags
   useEffect(() => {
@@ -211,6 +228,103 @@ const Settings = () => {
                 checked={preferences.hideFlowToggle}
                 onCheckedChange={(checked) => updatePreference('hideFlowToggle', checked)}
               />
+            </div>
+          </div>
+        </section>
+
+        {/* AI Integration Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">AI Integration</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Add your API keys to enable AI-powered tag suggestions. Keys are stored locally on your device.
+          </p>
+          
+          <div className="space-y-3">
+            <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">OpenAI API Key</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      type={showOpenaiKey ? "text" : "password"}
+                      value={openaiKeyInput}
+                      onChange={(e) => setOpenaiKeyInput(e.target.value)}
+                      placeholder="sk-..."
+                      className="pr-10 text-sm"
+                      data-testid="input-openai-key"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOpenaiKey(!showOpenaiKey)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showOpenaiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      saveAIKeys({ openaiKey: openaiKeyInput });
+                      toast.success('OpenAI key saved');
+                    }}
+                    disabled={openaiKeyInput === aiKeys.openaiKey}
+                    data-testid="button-save-openai-key"
+                  >
+                    Save
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Get your key from{' '}
+                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    platform.openai.com
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Gemini API Key</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      type={showGeminiKey ? "text" : "password"}
+                      value={geminiKeyInput}
+                      onChange={(e) => setGeminiKeyInput(e.target.value)}
+                      placeholder="AIza..."
+                      className="pr-10 text-sm"
+                      data-testid="input-gemini-key"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowGeminiKey(!showGeminiKey)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showGeminiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      saveAIKeys({ geminiKey: geminiKeyInput });
+                      toast.success('Gemini key saved');
+                    }}
+                    disabled={geminiKeyInput === aiKeys.geminiKey}
+                    data-testid="button-save-gemini-key"
+                  >
+                    Save
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Get your key from{' '}
+                  <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    aistudio.google.com
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </section>

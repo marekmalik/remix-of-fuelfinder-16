@@ -19,7 +19,7 @@ import FeelingsSection from "@/components/FeelingsSection";
 import TagInput from "@/components/TagInput";
 import { useUserTags } from "@/hooks/useUserTags";
 import { useTagFrequencies } from "@/hooks/useTagFrequencies";
-import { ArrowLeft, Tag, CalendarIcon, Clock, Loader2, Save, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Tag, CalendarIcon, Clock, Loader2, Save, Plus, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
